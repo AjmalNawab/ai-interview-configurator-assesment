@@ -50,8 +50,4 @@ test("Coupon input accepts a code", async () => {
 
   const applyButton = screen.getByText("Apply");
   await user.click(applyButton);
-
-  // Optional: If your component shows an error for subtotal <= 30
-  // const errorMessage = await screen.findByText(/minimum order of \$30/i);
-  // expect(errorMessage).toBeInTheDocument();
 });
