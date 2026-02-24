@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import InterviewContext from "../context/InterviewContext";
 import type { InterviewType, Difficulty, Duration } from "../types/interview.ts";
@@ -15,6 +16,7 @@ const durationOptions: Duration[] = [15, 30, 45, 60];
 
 const ConfigurePage = () => {
   const { state, dispatch } = useContext(InterviewContext);
+  const navigate = useNavigate();
   const [topicInput, setTopicInput] = useState("");
 
   const price = useMemo(() => {
@@ -89,13 +91,31 @@ const ConfigurePage = () => {
     });
   };
 
+  const canProceed =
+    Boolean(state.interviewType) &&
+    Boolean(state.difficulty) &&
+    Array.isArray(state.topics) &&
+    state.topics.length > 0;
+
   return (
     <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Configure Your AI Interview</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold">Configure Your AI Interview</h1>
+        <button
+          type="button"
+          className="text-sm text-blue-600 hover:underline"
+          onClick={() => navigate("/questions")}
+        >
+          View Question Bank
+        </button>
+      </div>
 
       {/* Interview Type */}
-      <label className="block mb-2">Interview Type</label>
+      <label className="block mb-2" htmlFor="interviewType">
+        Interview Type
+      </label>
       <select
+        id="interviewType"
         value={state.interviewType || ""}
         onChange={(e) =>
           dispatch({
@@ -121,8 +141,11 @@ const ConfigurePage = () => {
       </select>
 
       {/* Difficulty */}
-      <label className="block mb-2">Difficulty</label>
+      <label className="block mb-2" htmlFor="difficulty">
+        Difficulty
+      </label>
       <select
+        id="difficulty"
         value={state.difficulty || ""}
         onChange={(e) =>
           dispatch({
@@ -141,8 +164,11 @@ const ConfigurePage = () => {
       </select>
 
       {/* Duration */}
-      <label className="block mb-2">Duration</label>
+      <label className="block mb-2" htmlFor="duration">
+        Duration
+      </label>
       <select
+        id="duration"
         value={state.duration || ""}
         onChange={(e) =>
           dispatch({
@@ -161,9 +187,12 @@ const ConfigurePage = () => {
       </select>
 
       {/* Topics */}
-      <label className="block mb-2">Topics</label>
+      <label className="block mb-2" htmlFor="topics">
+        Topics
+      </label>
       <div className="flex mb-2">
         <input
+          id="topics"
           type="text"
           value={topicInput}
           onChange={(e) => setTopicInput(e.target.value)}
@@ -219,6 +248,18 @@ const ConfigurePage = () => {
       <div className="text-xl font-bold">
         Total Price: <span className="text-green-600">${price.toFixed(2)}</span>
       </div>
+
+      <button
+        className={`w-full py-3 mt-6 font-bold rounded ${
+          canProceed
+            ? "bg-blue-600 text-white hover:bg-blue-700"
+            : "bg-gray-300 text-gray-600 cursor-not-allowed"
+        }`}
+        disabled={!canProceed}
+        onClick={() => navigate("/checkout")}
+      >
+        Proceed to Checkout
+      </button>
     </div>
   );
 };
