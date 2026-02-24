@@ -1,5 +1,6 @@
-import { createContext, useReducer, ReactNode, useEffect } from "react";
-import { InterviewConfig } from "../types/interview";
+import { createContext, useReducer, useEffect } from "react";
+import type { ReactNode } from "react";
+import type { InterviewConfig } from "../types/interview";
 
 type Action =
   | { type: "SET_TYPE"; payload: InterviewConfig["interviewType"] }
@@ -10,9 +11,7 @@ type Action =
   | { type: "SET_ALL"; payload: InterviewConfig }
   | { type: "RESET" };
 
-interface State extends InterviewConfig {}
-
-const initialState: State = {
+const initialState: InterviewConfig = {
   interviewType: undefined,
   difficulty: undefined,
   topics: [],
@@ -26,14 +25,14 @@ const initialState: State = {
 };
 
 const InterviewContext = createContext<{
-  state: State;
+  state: InterviewConfig;
   dispatch: React.Dispatch<Action>;
 }>({
   state: initialState,
   dispatch: () => null,
 });
 
-function reducer(state: State, action: Action): State {
+function reducer(state: InterviewConfig, action: Action): InterviewConfig {
   switch (action.type) {
     case "SET_TYPE":
       return { ...state, interviewType: action.payload };
@@ -59,7 +58,10 @@ export const InterviewProvider = ({ children }: { children: ReactNode }) => {
     // Load from localStorage if less than 30 minutes old
     const saved = localStorage.getItem("interviewConfig");
     if (saved) {
-      const parsed = JSON.parse(saved) as { data: State; timestamp: number };
+      const parsed = JSON.parse(saved) as {
+        data: InterviewConfig;
+        timestamp: number;
+      };
       const now = new Date().getTime();
       if (now - parsed.timestamp < 30 * 60 * 1000) {
         return parsed.data;
